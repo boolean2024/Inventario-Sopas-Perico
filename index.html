@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inventario Sopas Perico</title>
+    <meta
+      name="description"
+      content="Sistema ligero de inventario de libros con inicio de sesion y filtros optimizados."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,600;7..72,700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+
+    <section id="auth-view" class="auth-shell" aria-label="Inicio de sesion">
+      <article class="auth-card">
+        <p class="eyebrow">Inventario Sopas Perico</p>
+        <h2>Inicio de sesion</h2>
+        <p class="subtitle">
+          Ingresa para administrar el inventario de forma segura y rapida.
+        </p>
+        <form id="login-form" class="auth-form" novalidate>
+          <label class="field">
+            <span>Usuario</span>
+            <input
+              id="username"
+              type="text"
+              required
+              maxlength="30"
+              placeholder="admin"
+              autocomplete="username"
+            />
+          </label>
+          <label class="field">
+            <span>Contrasena</span>
+            <input
+              id="password"
+              type="password"
+              required
+              maxlength="50"
+              placeholder="perico123"
+              autocomplete="current-password"
+            />
+          </label>
+          <label class="remember-line">
+            <input id="remember-session" type="checkbox" />
+            <span>Mantener sesion</span>
+          </label>
+          <button class="btn btn-primary auth-btn" type="submit">
+            Entrar al sistema
+          </button>
+        </form>
+        <p class="auth-hint">Demo: usuario `admin` y contrasena `perico123`.</p>
+      </article>
+    </section>
+
+    <main id="app-view" class="app-shell hidden">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">Inventario Sopas Perico</p>
+          <h1>Inventario Sopas Perico</h1>
+          <p class="subtitle">
+            Administra titulos, existencias y estado de prestamo en una sola
+            vista.
+          </p>
+        </div>
+        <div class="hero-actions">
+          <p id="session-user" class="session-user"></p>
+          <button id="logout-btn" class="btn btn-soft" type="button">
+            Cerrar sesion
+          </button>
+          <button id="new-book-btn" class="btn btn-primary" type="button">
+            + Nuevo libro
+          </button>
+        </div>
+      </header>
+
+      <section class="stats-grid" aria-label="Metricas principales">
+        <article class="stat-card">
+          <p>Total de titulos</p>
+          <h2 id="stat-titles">0</h2>
+        </article>
+        <article class="stat-card">
+          <p>Total de ejemplares</p>
+          <h2 id="stat-copies">0</h2>
+        </article>
+        <article class="stat-card">
+          <p>Stock bajo (&lt;= 2)</p>
+          <h2 id="stat-low-stock">0</h2>
+        </article>
+      </section>
+
+      <section class="panel controls-panel" aria-label="Controles de busqueda">
+        <label class="field field-grow">
+          <span>Barra de busqueda</span>
+          <input
+            id="search-input"
+            type="search"
+            placeholder="Titulo, autor, categoria o ISBN..."
+            autocomplete="off"
+          />
+        </label>
+        <label class="field">
+          <span>Categoria</span>
+          <select id="category-filter">
+            <option value="all">Todas</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Estado</span>
+          <select id="status-filter">
+            <option value="all">Todos</option>
+            <option value="disponible">Disponible</option>
+            <option value="prestado">Prestado</option>
+            <option value="reservado">Reservado</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Ordenar</span>
+          <select id="sort-select">
+            <option value="updated_desc">Mas recientes</option>
+            <option value="title_asc">Titulo (A-Z)</option>
+            <option value="copies_desc">Mas ejemplares</option>
+            <option value="copies_asc">Menos ejemplares</option>
+          </select>
+        </label>
+        <button id="clear-filters-btn" class="btn btn-soft" type="button">
+          Limpiar filtros
+        </button>
+        <button id="export-btn" class="btn btn-ghost" type="button">
+          Exportar JSON
+        </button>
+        <label class="btn btn-ghost file-btn">
+          Importar JSON
+          <input id="import-input" type="file" accept="application/json" />
+        </label>
+      </section>
+
+      <section id="form-panel" class="panel form-panel collapsed">
+        <h3 id="form-title">Agregar libro</h3>
+        <form id="book-form" novalidate>
+          <input id="book-id" type="hidden" />
+          <div class="form-grid">
+            <label class="field">
+              <span>Titulo *</span>
+              <input id="title" type="text" required maxlength="120" />
+            </label>
+            <label class="field">
+              <span>Autor *</span>
+              <input id="author" type="text" required maxlength="80" />
+            </label>
+            <label class="field">
+              <span>Categoria *</span>
+              <input
+                id="category"
+                type="text"
+                required
+                maxlength="60"
+                placeholder="Novela, Historia, Ciencia..."
+              />
+            </label>
+            <label class="field">
+              <span>ISBN</span>
+              <input id="isbn" type="text" maxlength="25" />
+            </label>
+            <label class="field">
+              <span>Ubicacion</span>
+              <input
+                id="shelf"
+                type="text"
+                maxlength="50"
+                placeholder="Estante A-3"
+              />
+            </label>
+            <label class="field">
+              <span>Ejemplares *</span>
+              <input id="copies" type="number" min="0" max="9999" required />
+            </label>
+            <label class="field">
+              <span>Estado *</span>
+              <select id="status" required>
+                <option value="disponible">Disponible</option>
+                <option value="prestado">Prestado</option>
+                <option value="reservado">Reservado</option>
+              </select>
+            </label>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Guardar</button>
+            <button id="cancel-edit-btn" class="btn btn-soft" type="button">
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel table-panel">
+        <div class="table-header">
+          <h3>Catalogo</h3>
+          <p id="results-counter">0 resultados</p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Titulo</th>
+                <th>Autor</th>
+                <th>Categoria</th>
+                <th>ISBN</th>
+                <th>Ubicacion</th>
+                <th>Ejemplares</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="books-body"></tbody>
+          </table>
+        </div>
+        <div id="empty-state" class="empty-state hidden">
+          <h4>No hay libros que coincidan</h4>
+          <p>Prueba cambiando filtros o agrega un nuevo libro.</p>
+        </div>
+      </section>
+    </main>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
